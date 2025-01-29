@@ -1,0 +1,302 @@
+      :root {
+        --primary: #2a9d8f;
+        --primary-dark: #21867a;
+        --secondary: #264653;
+        --accent: #e9c46a;
+        --error: #e76f51;
+        --background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        --glass: rgba(255, 255, 255, 0.95);
+        --shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--background);
+        color: var(--secondary);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        line-height: 1.6;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 2rem auto;
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border-radius: 2rem;
+        box-shadow: var(--shadow);
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      h1 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 2rem;
+        letter-spacing: -1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .game-grid {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 3rem;
+        margin-top: 2rem;
+      }
+
+      .typing-section {
+        position: relative;
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+      }
+
+      .text-display {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.4rem;
+        height: 400px;
+        overflow-y: auto;
+        padding: 1rem;
+        border: 3px solid var(--primary);
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+        scroll-behavior: smooth;
+        line-height: 2;
+        background: white;
+      }
+
+      .text-display span {
+        transition: color 0.1s ease;
+        position: relative;
+      }
+
+      .text-display span.correct {
+        color: var(--primary);
+      }
+
+      .text-display span.incorrect {
+        color: var(--error);
+      }
+
+      .text-display span.current {
+        background: linear-gradient(
+          180deg,
+          rgba(233, 196, 106, 0.2) 0%,
+          rgba(233, 196, 106, 0) 100%
+        );
+        animation: cursorPulse 1.2s infinite;
+      }
+
+      @keyframes cursorPulse {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      textarea {
+        width: 100%;
+        padding: 1.5rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.4rem;
+        border: 3px solid var(--primary);
+        border-radius: 1rem;
+        resize: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+      }
+
+      textarea:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(42, 157, 143, 0.3);
+      }
+
+      .stats-panel {
+        background: white;
+        padding: 2rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 2rem;
+      }
+
+      .stat-item {
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: var(--secondary);
+        opacity: 0.8;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+      }
+
+      .premium-badge {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        background: linear-gradient(45deg, var(--primary), var(--accent));
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(42, 157, 143, 0.3);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 999;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background: var(--glass);
+        padding: 3rem;
+        border-radius: 2rem;
+        width: 90%;
+        max-width: 600px;
+        text-align: center;
+      }
+
+      .modal-input {
+        width: 100%;
+        padding: 1rem;
+        margin: 1rem 0;
+        border: 2px solid var(--primary);
+        border-radius: 1rem;
+        font-size: 1.2rem;
+      }
+
+      .language-selector {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+
+      .lang-btn {
+        padding: 1.5rem;
+        border: 2px solid var(--primary);
+        border-radius: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .lang-btn.selected {
+        background: var(--primary);
+        color: white;
+      }
+
+      .certificate-download {
+        display: none;
+        text-align: center;
+        margin-top: 2rem;
+      }
+
+      .download-btn {
+        background: var(--primary);
+        color: white;
+        padding: 1rem 3rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+
+      .download-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .copy-warning {
+        color: var(--error);
+        display: none;
+        margin-top: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        .container {
+          padding: 1.5rem;
+          border-radius: 1.5rem;
+        }
+
+        .game-grid {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .text-display {
+          font-size: 1.2rem;
+          height: 300px;
+        }
+
+        textarea {
+          font-size: 1.2rem;
+          padding: 1rem;
+        }
+
+        .stats-panel {
+          position: static;
+        }
+
+        .premium-badge {
+          position: static;
+          text-align: center;
+          margin-bottom: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .text-display {
+          font-size: 1rem;
+          height: 250px;
+        }
+
+        .stat-value {
+          font-size: 1.5rem;
+        }
+
+        .container {
+          padding: 1rem;
+        }
+      }
