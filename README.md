@@ -2,8 +2,6 @@
 
 Welcome to **Quick Typing Test** – a fun and interactive typing speed test application! Whether you're a beginner or a pro, this tool helps you improve your typing speed and accuracy in both **English** and **Turkish**. 🎯
 
-![Demo](https://via.placeholder.com/800x400.png?text=Quick+Typing+Test+Demo)  
-
 ---
 
 ## 🌟 Features
@@ -36,14 +34,6 @@ Check out the live demo of the project here:
 
 If you enjoy using this project and would like to support me, feel free to buy me a coffee! 😊  
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://kofe.al/senan)
-
----
-
-## 📸 Screenshots
-
-| Home Screen | Typing Test | Certificate |
-|-------------|-------------|-------------|
-| ![Home](https://via.placeholder.com/300x200.png?text=Home+Screen) | ![Typing](https://via.placeholder.com/300x200.png?text=Typing+Test) | ![Certificate](https://via.placeholder.com/300x200.png?text=Certificate) |
 
 ---
 
