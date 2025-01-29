@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Quick Typing Test</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&family=Playfair+Display:wght@700&family=Great+Vibes&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #2a9d8f;
+        --primary-dark: #21867a;
+        --secondary: #264653;
+        --accent: #e9c46a;
+        --error: #e76f51;
+        --background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        --glass: rgba(255, 255, 255, 0.95);
+        --shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--background);
+        color: var(--secondary);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        line-height: 1.6;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 2rem auto;
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border-radius: 2rem;
+        box-shadow: var(--shadow);
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      h1 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 2rem;
+        letter-spacing: -1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .game-grid {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 3rem;
+        margin-top: 2rem;
+      }
+
+      .typing-section {
+        position: relative;
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+      }
+
+      .text-display {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.4rem;
+        height: 400px;
+        overflow-y: auto;
+        padding: 1rem;
+        border: 3px solid var(--primary);
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+        scroll-behavior: smooth;
+        line-height: 2;
+        background: white;
+      }
+
+      .text-display span {
+        transition: color 0.1s ease;
+        position: relative;
+      }
+
+      .text-display span.correct {
+        color: var(--primary);
+      }
+
+      .text-display span.incorrect {
+        color: var(--error);
+      }
+
+      .text-display span.current {
+        background: linear-gradient(
+          180deg,
+          rgba(233, 196, 106, 0.2) 0%,
+          rgba(233, 196, 106, 0) 100%
+        );
+        animation: cursorPulse 1.2s infinite;
+      }
+
+      @keyframes cursorPulse {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      textarea {
+        width: 100%;
+        padding: 1.5rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.4rem;
+        border: 3px solid var(--primary);
+        border-radius: 1rem;
+        resize: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+      }
+
+      textarea:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(42, 157, 143, 0.3);
+      }
+
+      .stats-panel {
+        background: white;
+        padding: 2rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 2rem;
+      }
+
+      .stat-item {
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: var(--secondary);
+        opacity: 0.8;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+      }
+
+      .premium-badge {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        background: linear-gradient(45deg, var(--primary), var(--accent));
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(42, 157, 143, 0.3);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 999;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background: var(--glass);
+        padding: 3rem;
+        border-radius: 2rem;
+        width: 90%;
+        max-width: 600px;
+        text-align: center;
+      }
+
+      .modal-input {
+        width: 100%;
+        padding: 1rem;
+        margin: 1rem 0;
+        border: 2px solid var(--primary);
+        border-radius: 1rem;
+        font-size: 1.2rem;
+      }
+
+      .language-selector {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+
+      .lang-btn {
+        padding: 1.5rem;
+        border: 2px solid var(--primary);
+        border-radius: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .lang-btn.selected {
+        background: var(--primary);
+        color: white;
+      }
+
+      .certificate-download {
+        display: none;
+        text-align: center;
+        margin-top: 2rem;
+      }
+
+      .download-btn {
+        background: var(--primary);
+        color: white;
+        padding: 1rem 3rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+
+      .download-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .copy-warning {
+        color: var(--error);
+        display: none;
+        margin-top: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        .container {
+          padding: 1.5rem;
+          border-radius: 1.5rem;
+        }
+
+        .game-grid {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .text-display {
+          font-size: 1.2rem;
+          height: 300px;
+        }
+
+        textarea {
+          font-size: 1.2rem;
+          padding: 1rem;
+        }
+
+        .stats-panel {
+          position: static;
+        }
+
+        .premium-badge {
+          position: static;
+          text-align: center;
+          margin-bottom: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .text-display {
+          font-size: 1rem;
+          height: 250px;
+        }
+
+        .stat-value {
+          font-size: 1.5rem;
+        }
+
+        .container {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="modal" id="startModal">
+      <div class="modal-content">
+        <h2>Welcome to Quick Typing Test</h2>
+        <input
+          type="text"
+          class="modal-input"
+          id="username"
+          placeholder="Enter your username"
+        />
+        <div class="language-selector">
+          <div class="lang-btn" data-lang="tr">Türkçe</div>
+          <div class="lang-btn" data-lang="en">English</div>
+        </div>
+        <button class="download-btn" onclick="startGame()">Start</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <h1>Quick Typing Test</h1>
+      <div class="premium-badge">made by senotron</div>
+
+      <div class="game-grid">
+        <div class="typing-section">
+          <div class="text-display" id="game-text"></div>
+          <textarea
+            id="input-area"
+            placeholder="To get started, start typing..."
+            disabled
+          ></textarea>
+          <div class="copy-warning">Copy-paste blocked!</div>
+        </div>
+
+        <div class="stats-panel">
+          <div class="stat-item">
+            <div class="stat-label">TIME REMAINING</div>
+            <div class="stat-value" id="timer">60s</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">ACCURACY</div>
+            <div class="stat-value" id="accuracy">100%</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">WORDS PER MINUTE</div>
+            <div class="stat-value" id="wpm">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="certificate-download" id="certificateDownload">
+        <div class="download-btn" onclick="downloadCertificate()">
+          Download Certificate
+        </div>
+      </div>
+    </div>
+
+    <canvas id="certificate"></canvas>
+
+    <script>
+      const texts = {
+        tr: [
+          `Bilgisayar teknolojilerinin hızla geliştiği günümüz dünyasında klavye kullanma becerisi artık temel bir yetkinlik haline gelmiştir. Yazılım geliştiricilerden dijital pazarlama uzmanlarına kadar her meslek grubu için etkili ve hızlı yazma yeteneği büyük önem taşımaktadır. Bu eğitim programı kullanıcıların hem İngilizce hem Türkçe metinler üzerinde çalışarak iki dilde de uzmanlık kazanmalarını hedeflemektedir. Gelişmiş algoritmalar sayesinde kullanıcıların zayıf yönleri analiz edilmekte ve kişiye özel antrenman programları oluşturulmaktadır. Özellikle teknik terimler ve karmaşık cümle yapıları üzerinde yoğunlaşan bu sistem gerçek dünya senaryolarını simüle ederek profesyonel kullanıcıların ihtiyaçlarını karşılamaktadır. Düzenli pratik yaparak dakikada 120 kelime hızına ve %99,5 doğruluk oranına ulaşmak mümkündür.`.repeat(
+            4
+          ),
+        ],
+        en: [
+          `In the rapidly evolving landscape of computer technology keyboard proficiency has become a fundamental competency across all professional domains. From software engineers to digital marketing specialists the ability to type efficiently and accurately is paramount. This comprehensive training program is designed to cultivate expertise in both English and Turkish languages employing sophisticated algorithms to analyze user performance and identify areas for improvement. Through meticulously crafted exercises that simulate real-world scenarios users can expect to achieve typing speeds exceeding 120 words per minute while maintaining exceptional accuracy rates above 99.5%. The system's adaptive learning module continuously adjusts difficulty levels based on user progress ensuring optimal skill development.`.repeat(
+            4
+          ),
+        ],
+      };
+
+      const elements = {
+        gameText: document.getElementById("game-text"),
+        inputArea: document.getElementById("input-area"),
+        timer: document.getElementById("timer"),
+        accuracy: document.getElementById("accuracy"),
+        wpm: document.getElementById("wpm"),
+        canvas: document.getElementById("certificate"),
+      };
+
+      let currentText = "";
+      let startTime;
+      let timerInterval;
+      let currentCharIndex = 0;
+      let currentLang = "en";
+      let userName = "";
+
+      document.querySelectorAll(".lang-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          document
+            .querySelectorAll(".lang-btn")
+            .forEach((b) => b.classList.remove("selected"));
+          this.classList.add("selected");
+          currentLang = this.dataset.lang;
+        });
+      });
+
+      function startGame() {
+        userName = document.getElementById("username").value;
+        if (!userName) {
+          alert("Please enter your username!");
+          return;
+        }
+        document.getElementById("startModal").style.display = "none";
+        initGame();
+      }
+
+      function initGame() {
+        currentText =
+          texts[currentLang][
+            Math.floor(Math.random() * texts[currentLang].length)
+          ];
+        elements.gameText.innerHTML = currentText
+          .split("")
+          .map((char, i) => `<span data-index="${i}">${char}</span>`)
+          .join("");
+        elements.inputArea.value = "";
+        elements.inputArea.disabled = false;
+        elements.inputArea.focus();
+        startTime = Date.now();
+        currentCharIndex = 0;
+        startTimer();
+        updateCurrentChar();
+      }
+
+      function startTimer() {
+        let time = 60;
+        elements.timer.textContent = `${time}s`;
+        timerInterval = setInterval(() => {
+          time--;
+          elements.timer.textContent = `${time}s`;
+          if (time <= 0) endGame();
+        }, 1000);
+      }
+
+      elements.inputArea.addEventListener("input", (e) => {
+        const typed = e.target.value;
+        currentCharIndex = typed.length;
+        updateTextDisplay(typed);
+        calculateStats();
+        scrollToCurrentChar();
+      });
+
+      elements.inputArea.addEventListener("paste", (e) => {
+        e.preventDefault();
+        document.querySelector(".copy-warning").style.display = "block";
+        setTimeout(() => {
+          document.querySelector(".copy-warning").style.display = "none";
+        }, 2000);
+      });
+
+      function updateTextDisplay(typed) {
+        const spans = elements.gameText.querySelectorAll("span");
+        spans.forEach((span, i) => {
+          span.className =
+            i < typed.length
+              ? typed[i] === currentText[i]
+                ? "correct"
+                : "incorrect"
+              : "";
+          if (i === currentCharIndex) span.classList.add("current");
+        });
+      }
+
+      function scrollToCurrentChar() {
+        const currentSpan = elements.gameText.querySelector(
+          `[data-index="${currentCharIndex}"]`
+        );
+        if (currentSpan) {
+          currentSpan.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "center",
+          });
+        }
+      }
+
+      function calculateStats() {
+        const typed = elements.inputArea.value;
+        const correct = typed
+          .split("")
+          .filter((c, i) => c === currentText[i]).length;
+        const accuracy = ((correct / typed.length) * 100 || 0).toFixed(1);
+        const timeElapsed = (Date.now() - startTime) / 1000;
+        const wpm = (correct / 5 / (timeElapsed / 60)).toFixed(1);
+
+        elements.accuracy.textContent = `${accuracy}%`;
+        elements.wpm.textContent = wpm;
+      }
+
+      function endGame() {
+        clearInterval(timerInterval);
+        elements.inputArea.disabled = true;
+        document.getElementById("certificateDownload").style.display = "block";
+        generateCertificate();
+      }
+
+      function generateCertificate() {
+        let binaryInput =
+          "01010011 01000101 01001110 01001111 01010100 01010010 01001111 01001110";
+        let binaryArray = binaryInput.split(" ");
+        let textOutput = binaryArray
+          .map((bin) => String.fromCharCode(parseInt(bin, 2)))
+          .join("");
+
+        const canvas = elements.canvas;
+        canvas.width = 3840;
+        canvas.height = 2160;
+        const ctx = canvas.getContext("2d");
+        const createBackgroundText = () => {
+          ctx.save();
+          ctx.globalAlpha = 0.1;
+          ctx.font = '900 480px "Playfair Display"';
+          ctx.fillStyle = "#666666";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+
+          ctx.fillText(`${textOutput}`, canvas.width / 2, canvas.height / 2);
+          ctx.restore();
+        };
+
+        const gradient = ctx.createLinearGradient(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+        gradient.addColorStop(0, "#f8f9fa");
+        gradient.addColorStop(1, "#e9ecef");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        createBackgroundText();
+
+        ctx.strokeStyle = "#E9C46A";
+        ctx.lineWidth = 30;
+        ctx.shadowColor = "rgba(0,0,0,0.3)";
+        ctx.shadowBlur = 50;
+        ctx.strokeRect(120, 120, canvas.width - 240, canvas.height - 240);
+
+        ctx.textAlign = "center";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
+        ctx.shadowBlur = 20;
+
+        ctx.fillStyle = "#264653";
+        ctx.font = 'italic 900 144px "Playfair Display"';
+        ctx.fillText("TYPING MASTERY CERTIFICATE", canvas.width / 2, 400);
+
+        ctx.font = '900 180px "Inter"';
+        ctx.fillStyle = "#2A9D8F";
+        ctx.fillText(userName.toUpperCase(), canvas.width / 2, 700);
+
+        const metrics = [
+          { label: "Words Per Minute", value: elements.wpm.textContent },
+          { label: "Accuracy", value: elements.accuracy.textContent },
+          { label: "Date", value: new Date().toLocaleDateString() },
+        ];
+
+        metrics.forEach((metric, i) => {
+          ctx.font = '600 72px "JetBrains Mono"';
+          ctx.fillStyle = "#264653";
+          ctx.fillText(
+            `${metric.label}:`,
+            canvas.width / 2 - 400,
+            900 + i * 180
+          );
+          ctx.font = '900 84px "Inter"';
+          ctx.fillStyle = "#2A9D8F";
+          ctx.fillText(metric.value, canvas.width / 2 + 400, 900 + i * 180);
+        });
+
+        const createSeal = () => {
+          ctx.save();
+
+          const sealY = canvas.height - 400;
+          ctx.translate(canvas.width / 2, sealY);
+
+          ctx.beginPath();
+          for (let i = 0; i < 36; i++) {
+            const angle = (i * 10 * Math.PI) / 180;
+            const x = Math.cos(angle) * 240;
+            const y = Math.sin(angle) * 240;
+            ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = "#E9C46A";
+          ctx.lineWidth = 12;
+          ctx.stroke();
+
+          ctx.font = '900 54px "Inter"';
+          ctx.fillStyle = "#2A9D8F";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("SENOTRON", 0, -30);
+          ctx.fillText("CERTIFIED", 0, 50);
+
+          ctx.restore();
+        };
+        createSeal();
+      }
+
+      function downloadCertificate() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 3840;
+        canvas.height = 2160;
+        const tempCtx = canvas.getContext("2d");
+
+        tempCtx.drawImage(elements.canvas, 0, 0);
+
+        const link = document.createElement("a");
+        link.download = `${userName}_certificate.png`;
+        link.href = canvas.toDataURL("image/png", 1.0);
+        link.click();
+      }
+      function downloadCertificate() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 2560;
+        canvas.height = 1440;
+        const tempCtx = canvas.getContext("2d");
+
+        tempCtx.drawImage(elements.canvas, 0, 0);
+
+        tempCtx.globalCompositeOperation = "overlay";
+        tempCtx.fillStyle = "rgba(233, 196, 106, 0.03)";
+        tempCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const link = document.createElement("a");
+        link.download = `${userName}_certificate_${Date.now()}.png`;
+        link.href = canvas.toDataURL("image/png", 1.0);
+        link.click();
+      }
+      function downloadCertificate() {
+        const link = document.createElement("a");
+        link.download = `${userName}_typing_certificate.png`;
+        link.href = elements.canvas.toDataURL();
+        link.click();
+      }
+
+      window.onload = () => {
+        document.getElementById("startModal").style.display = "flex";
+      };
+    </script>
+  </body>
+</html>
